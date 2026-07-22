@@ -1,0 +1,1030 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#EEF2ED;
+  --card:#FBFCFA;
+  --ink:#1C2B33;
+  --ink-soft:#4B5A61;
+  --rule:#C7D0C9;
+  --rule-strong:#9FAEA4;
+  --bank:#2F6844;
+  --bank-soft:#E4EEE6;
+  --heloc:#8B2635;
+  --heloc-soft:#F3E4E4;
+  --accent:#1F4B43;
+  --accent-hover:#163731;
+  --amber:#B5651D;
+  --amber-soft:#F5E7D6;
+  --radius:3px;
+}
+*{box-sizing:border-box;}
+.vb-root{
+  font-family:'IBM Plex Sans', sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100%;
+  padding:0;
+  line-height:1.4;
+}
+.vb-root ::selection{background:var(--amber-soft);}
+.vb-shell{max-width:920px;margin:0 auto;padding:20px 16px 60px;}
+
+/* Header */
+.vb-header{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;border-bottom:2px solid var(--ink);padding-bottom:12px;}
+.vb-title{font-family:'Fraunces', serif;font-weight:700;font-size:28px;letter-spacing:-0.01em;}
+.vb-title .vb-ledger-mark{color:var(--heloc);}
+.vb-subtitle{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.vb-month-picker{display:flex;align-items:center;gap:8px;}
+.vb-select{font-family:'IBM Plex Mono',monospace;font-size:14px;background:var(--card);border:1px solid var(--rule-strong);border-radius:var(--radius);padding:7px 10px;color:var(--ink);}
+.vb-btn{
+  font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;
+  background:var(--accent);color:#fff;border:none;border-radius:var(--radius);
+  padding:8px 14px;cursor:pointer;transition:background .15s ease;
+}
+.vb-btn:hover{background:var(--accent-hover);}
+.vb-btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+.vb-btn.ghost:hover{background:var(--accent);color:#fff;}
+.vb-btn.danger{background:transparent;color:var(--heloc);border:1px solid var(--heloc);}
+.vb-btn.danger:hover{background:var(--heloc);color:#fff;}
+.vb-btn.small{padding:5px 10px;font-size:12px;}
+.vb-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Tabs */
+.vb-tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid var(--rule);}
+.vb-tab{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.03em;
+  padding:9px 16px;cursor:pointer;color:var(--ink-soft);border-bottom:2px solid transparent;
+  user-select:none;
+}
+.vb-tab.active{color:var(--ink);border-bottom-color:var(--heloc);font-weight:600;}
+.vb-tab:hover:not(.active){color:var(--ink);}
+
+.vb-panel{display:none;}
+.vb-panel.active{display:block;}
+
+/* Cards / ledger sections */
+.vb-card{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+.vb-card h3{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin:0 0 12px;}
+.vb-card h3 .vb-note{font-family:'IBM Plex Sans',sans-serif;font-weight:400;font-size:12px;color:var(--ink-soft);}
+.vb-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.vb-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px;}
+.vb-field label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
+.vb-field input, .vb-field select, .vb-field textarea{
+  font-family:'IBM Plex Mono',monospace;font-size:14px;padding:7px 9px;
+  border:1px solid var(--rule-strong);border-radius:var(--radius);background:#fff;color:var(--ink);
+}
+.vb-field input:focus, .vb-field select:focus, .vb-field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;}
+.vb-help{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+
+/* Ledger table */
+.vb-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+.vb-table th{text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);border-bottom:1px solid var(--ink);padding:6px 8px;}
+.vb-table td{padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:middle;}
+.vb-table tr:hover td{background:rgba(0,0,0,0.02);}
+.vb-amt{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.vb-amt.neg{color:var(--heloc);}
+.vb-amt.pos{color:var(--bank);}
+.vb-tag{display:inline-block;font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.03em;}
+.vb-tag.bank{background:var(--bank-soft);color:var(--bank);}
+.vb-tag.heloc{background:var(--heloc-soft);color:var(--heloc);}
+.vb-tag.other{background:#eee;color:var(--ink-soft);}
+.vb-del{cursor:pointer;color:var(--ink-soft);font-size:15px;background:none;border:none;padding:0 4px;}
+.vb-del:hover{color:var(--heloc);}
+
+/* Weeks */
+.vb-week-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+.vb-week-card{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;}
+.vb-week-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:var(--ink);color:#fff;}
+.vb-week-head .vb-wk-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;}
+.vb-week-head .vb-wk-dates{font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:.8;}
+.vb-week-body{padding:16px 18px;}
+
+/* Ledger beam - signature element */
+.vb-beam{margin:14px 0 18px;}
+.vb-beam-bar{display:flex;height:26px;border-radius:2px;overflow:hidden;border:1px solid var(--ink);}
+.vb-beam-seg{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#fff;white-space:nowrap;overflow:hidden;}
+.vb-beam-seg.bank{background:var(--bank);}
+.vb-beam-seg.heloc{background:var(--heloc);}
+.vb-beam-seg.buffer{background:var(--amber);}
+.vb-beam-legend{display:flex;gap:16px;margin-top:6px;font-size:11px;color:var(--ink-soft);}
+.vb-beam-legend span{display:inline-flex;align-items:center;gap:5px;}
+.vb-swatch{width:9px;height:9px;border-radius:2px;display:inline-block;}
+
+.vb-kv{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;padding:4px 0;border-bottom:1px dotted var(--rule);}
+.vb-kv.total{border-bottom:none;border-top:1px solid var(--ink);margin-top:4px;padding-top:8px;font-weight:600;}
+.vb-kv-label{color:var(--ink-soft);font-family:'IBM Plex Sans',sans-serif;font-size:13px;}
+
+.vb-action-banner{
+  margin-top:14px;padding:12px 16px;border-radius:var(--radius);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.vb-action-banner.to-bank{background:var(--heloc-soft);border:1px solid var(--heloc);}
+.vb-action-banner.to-heloc{background:var(--bank-soft);border:1px solid var(--bank);}
+.vb-action-text{font-family:'Fraunces',serif;font-weight:600;font-size:15px;}
+.vb-action-amt{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;}
+.vb-check{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);}
+
+.vb-inline-edit{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule);}
+
+/* Import box */
+.vb-import textarea{width:100%;min-height:120px;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px;border:1px solid var(--rule-strong);border-radius:var(--radius);}
+.vb-import-actions{display:flex;gap:10px;margin-top:10px;align-items:center;}
+.vb-import-msg{font-size:12.5px;color:var(--ink-soft);}
+
+/* Summary */
+.vb-summary-chart{display:flex;align-items:flex-end;gap:18px;height:140px;margin:10px 0 6px;padding:0 6px;}
+.vb-sum-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.vb-sum-bar{width:100%;max-width:56px;background:var(--heloc);border-radius:2px 2px 0 0;position:relative;}
+.vb-sum-label{font-size:11px;color:var(--ink-soft);margin-top:6px;font-family:'IBM Plex Mono',monospace;}
+.vb-sum-val{font-size:11px;font-family:'IBM Plex Mono',monospace;margin-bottom:4px;}
+
+.vb-empty{padding:30px 10px;text-align:center;color:var(--ink-soft);font-size:13.5px;}
+.vb-empty strong{display:block;color:var(--ink);font-family:'Fraunces',serif;font-size:16px;margin-bottom:4px;font-weight:600;}
+
+.vb-assumption{font-size:11.5px;color:var(--ink-soft);background:var(--amber-soft);border-left:3px solid var(--amber);padding:8px 12px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:16px;}
+
+@media(max-width:600px){
+  .vb-shell{padding:14px 10px 50px;}
+  .vb-title{font-size:22px;}
+  .vb-row{flex-direction:column;}
+  .vb-table{font-size:11.5px;}
+}
+</style>
+
+<div class="vb-root">
+<div class="vb-shell" id="vb-shell">Loading…</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+
+const LS_API_KEY = 'vb-api-url';
+
+function resolveApiUrl(){
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('api');
+    if(q){ localStorage.setItem(LS_API_KEY, q); return q; }
+    return localStorage.getItem(LS_API_KEY) || '';
+  }catch(e){ return ''; }
+}
+
+function buildRemoteStorage(apiUrl){
+  async function callGet(params){
+    const url = apiUrl + (apiUrl.indexOf('?')>-1 ? '&' : '?') + new URLSearchParams(params).toString();
+    const res = await fetch(url, {method:'GET'});
+    const text = await res.text();
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    try{ return JSON.parse(text); }
+    catch(e){ throw new Error('Non-JSON response (likely a Google sign-in/auth page, not the script output)'); }
+  }
+  async function callPost(body){
+    // text/plain avoids a CORS preflight, which Apps Script Web Apps don't handle
+    const res = await fetch(apiUrl, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body)});
+    const text = await res.text();
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    try{ return JSON.parse(text); }
+    catch(e){ throw new Error('Non-JSON response (likely a Google sign-in/auth page, not the script output)'); }
+  }
+  return {
+    async get(key){
+      const r = await callGet({action:'get', key});
+      if(!r || r.value===null || r.value===undefined) return null;
+      return {key, value:r.value, shared:false};
+    },
+    async set(key, value){
+      const r = await callPost({action:'set', key, value});
+      if(!r || !r.ok) throw new Error(r && r.error || 'set failed');
+      return {key, value, shared:false};
+    },
+    async delete(key){
+      const r = await callPost({action:'delete', key});
+      if(!r || !r.ok) throw new Error(r && r.error || 'delete failed');
+      return {key, deleted:true, shared:false};
+    },
+    async list(prefix){
+      const r = await callGet({action:'list', prefix: prefix||''});
+      if(!r) throw new Error('list failed');
+      return {keys: r.keys||[], prefix, shared:false};
+    }
+  };
+}
+
+function buildLocalStorageBackend(){
+  // Fallback when no Google Sheets sync is configured and no Claude artifact
+  // storage is available. Works offline, but only on this device/browser.
+  return {
+    async get(key){
+      try{ const v = localStorage.getItem('vb:'+key); return v===null ? null : {key, value:v, shared:false}; }
+      catch(e){ return null; }
+    },
+    async set(key, value){
+      try{ localStorage.setItem('vb:'+key, value); return {key, value, shared:false}; }
+      catch(e){ return null; }
+    },
+    async delete(key){
+      try{ localStorage.removeItem('vb:'+key); return {key, deleted:true, shared:false}; }
+      catch(e){ return null; }
+    },
+    async list(prefix){
+      try{
+        const keys = [];
+        for(let i=0;i<localStorage.length;i++){
+          const k = localStorage.key(i);
+          if(k && k.startsWith('vb:')){
+            const bare = k.slice(3);
+            if(!prefix || bare.startsWith(prefix)) keys.push(bare);
+          }
+        }
+        return {keys, prefix, shared:false};
+      }catch(e){ return null; }
+    }
+  };
+}
+
+const configuredApiUrl = resolveApiUrl();
+const claudeStorage = window.storage; // present only inside a Claude artifact
+if(configuredApiUrl){
+  window.storage = buildRemoteStorage(configuredApiUrl);
+} else if(!claudeStorage){
+  window.storage = buildLocalStorageBackend();
+}
+// else: leave Claude's native artifact storage in place
+
+const STORAGE_SETTINGS = 'global-settings';
+const STORAGE_INDEX = 'months-index';
+
+let state = {
+  loaded:false,
+  settings: { bankAccount:'BOA Checking', helocAccount:'BOA Heloc', checkingThreshold:150 },
+  months: [],       // list of "YYYY-MM"
+  currentYm: null,
+  data: null,       // current month's data blob
+  tab: 'setup',
+  importText: '',
+  importPreview: null,
+  apiUrl: configuredApiUrl,
+  syncOk: true,
+};
+
+function apiConfigured(){ return !!state.apiUrl; }
+
+function setSyncStatus(ok){
+  state.syncOk = ok;
+  const badge = document.getElementById('vb-sync-badge');
+  if(!badge) return;
+  if(apiConfigured()){
+    badge.textContent = ok ? 'Synced to Google Sheets ✓' : 'Sync failed — check connection';
+    badge.style.color = ok ? 'var(--bank)' : 'var(--heloc)';
+  } else {
+    badge.textContent = 'Local only — no sync configured';
+    badge.style.color = 'var(--ink-soft)';
+  }
+}
+
+// ---------- storage helpers ----------
+async function loadAll(){
+  try{
+    const s = await window.storage.get(STORAGE_SETTINGS, false);
+    if(s) state.settings = JSON.parse(s.value);
+  }catch(e){}
+  try{
+    const idx = await window.storage.get(STORAGE_INDEX, false);
+    if(idx) state.months = JSON.parse(idx.value);
+  }catch(e){}
+  if(state.months.length === 0){
+    const ym = defaultYm();
+    state.months = [ym];
+    await saveIndex();
+    await ensureMonth(ym, true);
+  }
+  state.currentYm = state.months[state.months.length-1];
+  await loadMonth(state.currentYm);
+  state.loaded = true;
+  render();
+}
+
+async function saveSettings(){
+  try{
+    await window.storage.set(STORAGE_SETTINGS, JSON.stringify(state.settings), false);
+    setSyncStatus(true);
+  }catch(e){ setSyncStatus(false); }
+}
+async function saveIndex(){
+  try{
+    await window.storage.set(STORAGE_INDEX, JSON.stringify(state.months), false);
+    setSyncStatus(true);
+  }catch(e){ setSyncStatus(false); }
+}
+async function saveMonth(){
+  try{
+    await window.storage.set('month:'+state.currentYm, JSON.stringify(state.data), false);
+    setSyncStatus(true);
+  }catch(e){ setSyncStatus(false); }
+}
+async function loadMonth(ym){
+  try{
+    const m = await window.storage.get('month:'+ym, false);
+    state.data = m ? JSON.parse(m.value) : freshMonth(ym);
+  }catch(e){
+    state.data = freshMonth(ym);
+  }
+}
+async function ensureMonth(ym, isFirst){
+  let prevEndingHeloc = 0;
+  let prevEndingChecking = 0;
+  if(!isFirst && state.months.length){
+    try{
+      const prevYm = state.months[state.months.length-1];
+      const m = await window.storage.get('month:'+prevYm, false);
+      if(m){
+        const pd = JSON.parse(m.value);
+        const calc = computeWeeks(pd);
+        prevEndingHeloc = calc[3].helocAfter;
+        prevEndingChecking = null; // checking balance is a manual weekly snapshot, not modeled forward
+      }
+    }catch(e){}
+  }
+  const fresh = freshMonth(ym);
+  fresh.weeks[0].openingHeloc = round2(prevEndingHeloc);
+  state.data = fresh;
+  await window.storage.set('month:'+ym, JSON.stringify(fresh), false);
+}
+
+function freshMonth(ym){
+  return {
+    ym,
+    bankAccount: state.settings.bankAccount,
+    helocAccount: state.settings.helocAccount,
+    checkingThreshold: state.settings.checkingThreshold,
+    bills: [],
+    weeks: [0,1,2,3].map(()=>({openingHeloc:0, openingChecking:0, otherIncome:0, completed:false})),
+  };
+}
+
+function defaultYm(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+
+// ---------- date / week math (mirrors the original workbook) ----------
+function ymParts(ym){ const [y,m] = ym.split('-').map(Number); return {y,m}; }
+function daysInMonth(y,m){ return new Date(y, m, 0).getDate(); }
+function mkDate(y,m,d){ return new Date(Date.UTC(y, m-1, d)); }
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+function fmtDisp(d){ return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+'/'+d.getUTCFullYear(); }
+
+function weekRanges(ym){
+  const {y,m} = ymParts(ym);
+  const w1s = mkDate(y,m,1);
+  const w1e = new Date(w1s.getTime()+7*86400000);
+  const w2s = new Date(w1e.getTime()+86400000);
+  const w2e = mkDate(y,m,14);
+  const w3s = new Date(w2e.getTime()+86400000);
+  const w3e = new Date(w3s.getTime()+7*86400000);
+  const w4s = new Date(w3e.getTime()+86400000);
+  const w4e = mkDate(y,m,daysInMonth(y,m));
+  return [ [w1s,w1e], [w2s,w2e], [w3s,w3e], [w4s,w4e] ];
+}
+
+function round2(n){ return Math.round((n+Number.EPSILON)*100)/100; }
+
+// ---------- core calc engine (mirrors the workbook formulas) ----------
+function computeWeeks(data){
+  const ranges = weekRanges(data.ym);
+  const results = [];
+  ranges.forEach((r, i)=>{
+    const [start,end] = r;
+    const wk = data.weeks[i];
+    const bankBills = round2(sumBills(data.bills, data.bankAccount, start, end));
+    const helocBills = round2(sumBills(data.bills, data.helocAccount, start, end));
+    const threshold = data.checkingThreshold;
+    const openingChecking = wk.openingChecking || 0;
+    // threshold amount, replicated exactly from the original workbook formula:
+    // IF(Threshold > OpeningChecking, OpeningChecking-Threshold, Threshold-OpeningChecking)
+    const thresholdAmt = round2( threshold > openingChecking ? (openingChecking-threshold) : (threshold-openingChecking) );
+    const otherIncome = wk.otherIncome || 0;
+    const availableFunds = round2(thresholdAmt + bankBills + otherIncome);
+    const action = availableFunds <= 0 ? 'toBank' : 'toHeloc';
+    const moveAmount = availableFunds; // signed
+    const openingHeloc = wk.openingHeloc || 0;
+    const helocAfter = round2(action==='toBank' ? (openingHeloc - moveAmount) : (openingHeloc + moveAmount));
+    results.push({ start, end, bankBills, helocBills, thresholdAmt, otherIncome, availableFunds, action, moveAmount, openingHeloc, openingChecking, helocAfter, completed: wk.completed });
+  });
+  return results;
+}
+
+function sumBills(bills, account, start, end){
+  return bills.reduce((sum,b)=>{
+    if(b.account !== account) return sum;
+    const d = new Date(b.date+'T00:00:00Z');
+    if(d >= start && d <= end) return sum + b.amount;
+    return sum;
+  }, 0);
+}
+
+// ---------- Quicken paste import parsing ----------
+function parseImport(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
+  const bills = [];
+  let skipped = 0;
+  lines.forEach(line=>{
+    const cols = line.split('\t');
+    if(cols.length < 4) return;
+    const status = cols[0].trim();
+    const due = cols[1].trim();
+    const payee = cols[2].trim();
+    if(/^status$/i.test(status) || /^due$/i.test(due) || /bill and income/i.test(payee) || /new finances/i.test(due)) { skipped++; return; }
+    if(!due || !payee) { skipped++; return; }
+    const dateObj = parseLooseDate(due);
+    if(!dateObj) { skipped++; return; }
+    // columns can be: Status, Due, Payee, Payments, Deposits, Account, Method  (7-col export)
+    // or:            Status, Due, Payee, Payments, Account, Method            (6-col, no Deposits)
+    let payments = null, deposits = null, account = '', method='', statusOut = status || 'Manual';
+    if(cols.length >= 7){
+      payments = parseAmt(cols[3]); deposits = parseAmt(cols[4]); account = cols[5].trim(); method = cols[6].trim();
+    } else {
+      payments = parseAmt(cols[3]); account = cols[4] ? cols[4].trim() : ''; method = cols[5] ? cols[5].trim() : '';
+    }
+    let amount = 0;
+    if(payments) amount = payments;
+    else if(deposits) amount = deposits;
+    if(!account){ skipped++; return; }
+    bills.push({
+      id: 'b'+Math.random().toString(36).slice(2,10),
+      date: fmtDate(dateObj),
+      payee: payee,
+      amount: round2(amount),
+      account: account,
+      status: statusOut,
+    });
+  });
+  return { bills, skipped };
+}
+
+function parseLooseDate(s){
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m) return mkDate(+m[3], +m[1], +m[2]);
+  const m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m2) return mkDate(+m2[1], +m2[2], +m2[3]);
+  return null;
+}
+function parseAmt(s){
+  if(!s) return null;
+  const clean = s.replace(/[,$\s]/g,'');
+  if(clean === '' ) return null;
+  const n = parseFloat(clean);
+  return isNaN(n) ? null : n;
+}
+
+// ---------- render ----------
+function el(tag, attrs, children){
+  attrs = attrs || {};
+  const e = document.createElement(tag);
+  Object.keys(attrs).forEach(k=>{
+    if(k === 'class') e.className = attrs[k];
+    else if(k === 'html') e.innerHTML = attrs[k];
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  });
+  (children||[]).forEach(c=>{ if(c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+  return e;
+}
+function money(n){
+  const v = Math.abs(n).toFixed(2);
+  return (n<0 ? '('+v+')' : v);
+}
+
+function render(){
+  const root = document.getElementById('vb-shell');
+  root.innerHTML = '';
+  if(!state.loaded){ root.textContent = 'Loading…'; return; }
+
+  root.appendChild(renderHeader());
+  root.appendChild(renderTabs());
+
+  const panels = el('div',{});
+  panels.appendChild(wrapPanel('setup', renderSetup()));
+  panels.appendChild(wrapPanel('bills', renderBills()));
+  panels.appendChild(wrapPanel('weeks', renderWeeks()));
+  panels.appendChild(wrapPanel('summary', renderSummary()));
+  root.appendChild(panels);
+  setSyncStatus(state.syncOk);
+}
+
+function wrapPanel(name, contentEl){
+  const p = el('div',{class:'vb-panel'+(state.tab===name?' active':'')});
+  p.appendChild(contentEl);
+  return p;
+}
+
+function renderHeader(){
+  const h = el('div',{class:'vb-header'});
+  const left = el('div',{},[
+    el('div',{class:'vb-title'},['Velocity ', el('span',{class:'vb-ledger-mark'},['Ledger'])]),
+    el('div',{class:'vb-subtitle'},['HELOC paydown planner']),
+    el('div',{id:'vb-sync-badge', style:'font-size:11px;font-family:\'IBM Plex Mono\',monospace;margin-top:4px;'},['']),
+  ]);
+  const monthLabel = state.currentYm;
+  const sel = el('select',{class:'vb-select', onchange:async (e)=>{ state.currentYm = e.target.value; await loadMonth(state.currentYm); render(); }},
+    state.months.map(ym=> el('option',{value:ym, selected: ym===state.currentYm ? 'selected': null}, [ymLabel(ym)]))
+  );
+  const newBtn = el('button',{class:'vb-btn ghost small', onclick: onNewMonth},['+ New month']);
+  const exportBtn = el('button',{class:'vb-btn small', onclick: onExport},['Export to Excel']);
+  const right = el('div',{class:'vb-month-picker'},[sel, newBtn, exportBtn]);
+  h.appendChild(left); h.appendChild(right);
+  return h;
+}
+
+function ymLabel(ym){
+  const {y,m} = ymParts(ym);
+  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return names[m-1]+' '+y;
+}
+
+async function onNewMonth(){
+  let next = promptNextYm();
+  if(!next) return;
+  if(state.months.includes(next)){
+    alert('That month already exists. Pick it from the dropdown.');
+    return;
+  }
+  state.months.push(next);
+  state.months.sort();
+  await saveIndex();
+  await ensureMonth(next, false);
+  state.currentYm = next;
+  render();
+}
+function promptNextYm(){
+  const last = state.months[state.months.length-1];
+  const {y,m} = ymParts(last);
+  const ny = m===12 ? y+1 : y;
+  const nm = m===12 ? 1 : m+1;
+  const suggested = ny+'-'+String(nm).padStart(2,'0');
+  const input = window.prompt('New month (YYYY-MM):', suggested);
+  if(!input) return null;
+  if(!/^\d{4}-\d{2}$/.test(input.trim())){ alert('Use YYYY-MM format, e.g. 2026-09'); return null; }
+  return input.trim();
+}
+
+function renderTabs(){
+  const tabs = [['setup','Setup'],['bills','Bills'],['weeks','Weeks'],['summary','Summary']];
+  return el('div',{class:'vb-tabs'}, tabs.map(([key,label])=>
+    el('div',{class:'vb-tab'+(state.tab===key?' active':''), onclick:()=>{ state.tab=key; render(); }},[label])
+  ));
+}
+
+// ----- Setup panel -----
+function renderSyncCard(){
+  const card = el('div',{class:'vb-card'});
+  card.appendChild(el('h3',{},['Sync (Google Sheets)']));
+  card.appendChild(el('div',{class:'vb-help'},['Paste the Web App URL from your Apps Script deployment. Once saved, this device will read and write to that Sheet — do the same on your other device to share data between them.']));
+
+  const urlInput = el('input',{type:'text', placeholder:'https://script.google.com/macros/s/.../exec', style:'width:100%;'});
+  urlInput.value = state.apiUrl || '';
+  const msg = el('span',{class:'vb-import-msg'},['']);
+
+  const saveBtn = el('button',{class:'vb-btn small', onclick: async ()=>{
+    const url = urlInput.value.trim();
+    if(!url){ msg.textContent = 'Paste a Web App URL first.'; return; }
+    msg.textContent = 'Testing connection…';
+    try{
+      const testBackend = buildRemoteStorage(url);
+      await testBackend.set('vb-connection-test', String(Date.now()));
+      const check = await testBackend.get('vb-connection-test');
+      if(!check) throw new Error('no response');
+      localStorage.setItem(LS_API_KEY, url);
+      msg.textContent = 'Connected ✓ Reloading…';
+      setTimeout(()=>{ window.location.search = '?api='+encodeURIComponent(url); }, 500);
+    }catch(e){
+      msg.textContent = 'Could not connect: ' + (e && e.message ? e.message : e) + ' — check the URL is the /exec link and deployment access is "Anyone".';
+    }
+  }},['Save & test connection']);
+
+  const clearBtn = el('button',{class:'vb-btn ghost small', onclick: ()=>{
+    if(!window.confirm('Stop syncing to Google Sheets and go back to local-only storage on this device?')) return;
+    localStorage.removeItem(LS_API_KEY);
+    window.location.search = '';
+  }},['Disconnect']);
+
+  const row = el('div',{class:'vb-row'},[el('div',{class:'vb-field',style:'flex:1 1 100%;'},[el('label',{},['Web App URL']), urlInput])]);
+  card.appendChild(row);
+  const actions = el('div',{class:'vb-import-actions'},[saveBtn]);
+  if(apiConfigured()) actions.appendChild(clearBtn);
+  actions.appendChild(msg);
+  card.appendChild(actions);
+
+  if(apiConfigured()){
+    const bookmark = window.location.origin + window.location.pathname + '?api=' + encodeURIComponent(state.apiUrl);
+    const bmField = el('input',{type:'text', readonly:'readonly', value: bookmark, style:'width:100%;margin-top:10px;'});
+    card.appendChild(el('div',{class:'vb-help', style:'margin-top:10px;'},['Bookmark this exact link on your phone — it opens with sync already configured, no retyping:']));
+    card.appendChild(bmField);
+  }
+
+  return card;
+}
+
+function renderSetup(){
+  const wrap = el('div',{});
+  wrap.appendChild(renderSyncCard());
+  const card = el('div',{class:'vb-card'});
+  card.appendChild(el('h3',{},['Accounts & threshold ', el('span',{class:'vb-note'},['— applies to '+ymLabel(state.currentYm)])]));
+
+  const row1 = el('div',{class:'vb-row'},[
+    fieldText('Bank / checking account', state.data.bankAccount, v=>{ state.data.bankAccount = v; saveMonth(); }),
+    fieldText('HELOC account', state.data.helocAccount, v=>{ state.data.helocAccount = v; saveMonth(); }),
+    fieldNum('Checking threshold ($)', state.data.checkingThreshold, v=>{ state.data.checkingThreshold = v; saveMonth(); }),
+  ]);
+  card.appendChild(row1);
+  card.appendChild(el('div',{class:'vb-help'},['Account names must match exactly what appears in the "Account to Use" column of your bills — matching is case-sensitive.']));
+
+  const saveDefaultsBtn = el('button',{class:'vb-btn small', style:'margin-top:12px;', onclick: async ()=>{
+    state.settings.bankAccount = state.data.bankAccount;
+    state.settings.helocAccount = state.data.helocAccount;
+    state.settings.checkingThreshold = state.data.checkingThreshold;
+    await saveSettings();
+    flashMsg(saveDefaultsBtn, 'Saved as default ✓');
+  }},['Save as default for future months']);
+  card.appendChild(saveDefaultsBtn);
+  wrap.appendChild(card);
+
+  const week1 = state.data.weeks[0];
+  const card2 = el('div',{class:'vb-card'});
+  card2.appendChild(el('h3',{},['Opening balances']));
+  card2.appendChild(el('div',{class:'vb-help'},['Week 1\'s opening HELOC balance carries forward automatically from last month\'s ending balance when you create a new month — adjust it here if your real balance differs.']));
+  const row2 = el('div',{class:'vb-row'},[
+    fieldNum('Week 1 opening HELOC balance', week1.openingHeloc, v=>{ week1.openingHeloc=v; saveMonth(); }),
+    fieldNum('Week 1 opening checking balance', week1.openingChecking, v=>{ week1.openingChecking=v; saveMonth(); }),
+  ]);
+  card2.appendChild(row2);
+  wrap.appendChild(card2);
+
+  if(state.data.bills.length===0){
+    wrap.appendChild(el('div',{class:'vb-empty'},[
+      el('strong',{},['No bills yet for '+ymLabel(state.currentYm)]),
+      'Head to the Bills tab to paste this month\'s Quicken export or add rows by hand.'
+    ]));
+  }
+  return wrap;
+}
+
+function fieldText(label, val, onSave){
+  const inp = el('input',{type:'text', value: val||''});
+  inp.addEventListener('change', ()=> onSave(inp.value.trim()));
+  return el('div',{class:'vb-field'},[el('label',{},[label]), inp]);
+}
+function fieldNum(label, val, onSave){
+  const inp = el('input',{type:'number', step:'0.01', value: (val===0?0:(val||''))});
+  inp.addEventListener('change', ()=> onSave(round2(parseFloat(inp.value)||0)));
+  return el('div',{class:'vb-field'},[el('label',{},[label]), inp]);
+}
+function flashMsg(nearEl, msg){
+  const original = nearEl.textContent;
+  nearEl.textContent = msg;
+  setTimeout(()=>{ nearEl.textContent = original; }, 1600);
+}
+
+// ----- Bills panel -----
+function renderBills(){
+  const wrap = el('div',{});
+
+  const importCard = el('div',{class:'vb-card vb-import'});
+  importCard.appendChild(el('h3',{},['Paste Quicken export']));
+  importCard.appendChild(el('div',{class:'vb-help'},['Paste the tab-delimited export (same layout as your monthly Bills.txt). This replaces the current bill list for '+ymLabel(state.currentYm)+'.']));
+  const ta = el('textarea',{placeholder:'Status\\tDue\\tPay To / Receive From\\tPayments\\tDeposits\\tAccount to Use\\tMethod\\n...'});
+  ta.value = state.importText || '';
+  ta.addEventListener('input', ()=>{ state.importText = ta.value; });
+  importCard.appendChild(ta);
+  const actions = el('div',{class:'vb-import-actions'});
+  const msg = el('span',{class:'vb-import-msg'},['']);
+  const importBtn = el('button',{class:'vb-btn small', onclick: async ()=>{
+    if(!state.importText || !state.importText.trim()){ msg.textContent='Paste something first.'; return; }
+    const {bills, skipped} = parseImport(state.importText);
+    if(bills.length===0){ msg.textContent='No bill rows recognized — check the paste is tab-delimited.'; return; }
+    const doIt = state.data.bills.length===0 || window.confirm('This will replace the '+state.data.bills.length+' existing bill row(s) for '+ymLabel(state.currentYm)+' with '+bills.length+' imported row(s). Continue?');
+    if(!doIt) return;
+    state.data.bills = bills;
+    await saveMonth();
+    state.importText = '';
+    msg.textContent = 'Imported '+bills.length+' bill(s)'+(skipped?(', skipped '+skipped+' row(s)'):'')+'.';
+    render();
+  }},['Import & replace']);
+  actions.appendChild(importBtn); actions.appendChild(msg);
+  importCard.appendChild(actions);
+  wrap.appendChild(importCard);
+
+  const addCard = el('div',{class:'vb-card'});
+  addCard.appendChild(el('h3',{},['Add a bill manually']));
+  const dInput = el('input',{type:'date'});
+  const pInput = el('input',{type:'text', placeholder:'Payee'});
+  const aInput = el('input',{type:'number', step:'0.01', placeholder:'-45.00'});
+  const acctInput = el('input',{type:'text', placeholder: state.data.bankAccount, list:'vb-acct-list'});
+  const datalist = el('datalist',{id:'vb-acct-list'}, uniqueAccounts().map(a=>el('option',{value:a})));
+  const statusSel = el('select',{},[el('option',{value:'Manual'},['Manual']), el('option',{value:'Auto'},['Auto']), el('option',{value:'Upcoming'},['Upcoming'])]);
+  const addBtn = el('button',{class:'vb-btn small', onclick: async ()=>{
+    if(!dInput.value || !pInput.value.trim() || !aInput.value || !acctInput.value.trim()){
+      alert('Fill in date, payee, amount, and account.'); return;
+    }
+    state.data.bills.push({
+      id:'b'+Math.random().toString(36).slice(2,10),
+      date: dInput.value, payee: pInput.value.trim(),
+      amount: round2(parseFloat(aInput.value)), account: acctInput.value.trim(), status: statusSel.value,
+    });
+    await saveMonth();
+    dInput.value=''; pInput.value=''; aInput.value=''; acctInput.value='';
+    render();
+  }},['Add row']);
+  const row = el('div',{class:'vb-row'},[
+    el('div',{class:'vb-field'},[el('label',{},['Date']), dInput]),
+    el('div',{class:'vb-field'},[el('label',{},['Payee']), pInput]),
+    el('div',{class:'vb-field'},[el('label',{},['Amount']), aInput]),
+    el('div',{class:'vb-field'},[el('label',{},['Account']), acctInput, datalist]),
+    el('div',{class:'vb-field'},[el('label',{},['Status']), statusSel]),
+  ]);
+  addCard.appendChild(row);
+  addCard.appendChild(addBtn);
+  wrap.appendChild(addCard);
+
+  const listCard = el('div',{class:'vb-card'});
+  listCard.appendChild(el('h3',{},['Bills — '+ymLabel(state.currentYm), el('span',{class:'vb-note'},[' ('+state.data.bills.length+' rows)'])]));
+  if(state.data.bills.length===0){
+    listCard.appendChild(el('div',{class:'vb-empty'},['No bills yet. Paste an import above or add rows by hand.']));
+  } else {
+    const sorted = [...state.data.bills].sort((a,b)=> a.date.localeCompare(b.date));
+    const table = el('table',{class:'vb-table'});
+    table.appendChild(el('thead',{},[el('tr',{},[
+      el('th',{},['Due']), el('th',{},['Payee']), el('th',{},['Account']), el('th',{},['Amount']), el('th',{},[''])
+    ])]));
+    const tbody = el('tbody',{});
+    sorted.forEach(b=>{
+      const tag = b.account===state.data.bankAccount ? el('span',{class:'vb-tag bank'},['Bank'])
+                : b.account===state.data.helocAccount ? el('span',{class:'vb-tag heloc'},['HELOC'])
+                : el('span',{class:'vb-tag other'},['Other']);
+      const tr = el('tr',{},[
+        el('td',{},[dispDate(b.date)]),
+        el('td',{},[b.payee]),
+        el('td',{},[tag, ' ', el('span',{style:'color:var(--ink-soft);font-size:11.5px;'},[b.account])]),
+        el('td',{class:'vb-amt '+(b.amount<0?'neg':'pos')},[money(b.amount)]),
+        el('td',{},[el('button',{class:'vb-del', title:'Delete', onclick: async ()=>{
+          state.data.bills = state.data.bills.filter(x=>x.id!==b.id);
+          await saveMonth(); render();
+        }},['✕'])]),
+      ]);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    listCard.appendChild(table);
+  }
+  wrap.appendChild(listCard);
+
+  return wrap;
+}
+function uniqueAccounts(){
+  const s = new Set(state.data.bills.map(b=>b.account));
+  s.add(state.data.bankAccount); s.add(state.data.helocAccount);
+  return [...s].filter(Boolean);
+}
+function dispDate(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  return m+'/'+d+'/'+y;
+}
+
+// ----- Weeks panel -----
+function renderWeeks(){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'vb-assumption'},[
+    'Threshold formula matches your original workbook exactly: it always nets the checking threshold against the week\'s opening balance, even when the balance already exceeds the threshold. If a week\'s balance is well above $'+state.data.checkingThreshold+', double-check the "Available Funds" number makes sense before moving money.'
+  ]));
+  const calc = computeWeeks(state.data);
+  const grid = el('div',{class:'vb-week-grid'});
+  calc.forEach((wkCalc, i)=>{
+    grid.appendChild(renderWeekCard(i, wkCalc));
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderWeekCard(i, c){
+  const wk = state.data.weeks[i];
+  const card = el('div',{class:'vb-week-card'});
+  const head = el('div',{class:'vb-week-head'},[
+    el('div',{class:'vb-wk-title'},['Week '+(i+1)]),
+    el('div',{class:'vb-wk-dates'},[fmtDisp(c.start)+' – '+fmtDisp(c.end)]),
+  ]);
+  card.appendChild(head);
+  const body = el('div',{class:'vb-week-body'});
+
+  // signature ledger beam: bank bills vs heloc bills for the week
+  const maxSpan = Math.max(Math.abs(c.bankBills), Math.abs(c.helocBills), 1);
+  const bankPct = Math.max(6, Math.round(Math.abs(c.bankBills)/ (Math.abs(c.bankBills)+Math.abs(c.helocBills) || 1) * 100));
+  const helocPct = 100 - bankPct;
+  const beam = el('div',{class:'vb-beam'},[
+    el('div',{class:'vb-beam-bar'},[
+      el('div',{class:'vb-beam-seg bank', style:'width:'+bankPct+'%'},[money(c.bankBills)]),
+      el('div',{class:'vb-beam-seg heloc', style:'width:'+helocPct+'%'},[money(c.helocBills)]),
+    ]),
+    el('div',{class:'vb-beam-legend'},[
+      el('span',{},[el('span',{class:'vb-swatch',style:'background:var(--bank)'}), 'Bank bills ('+state.data.bankAccount+')']),
+      el('span',{},[el('span',{class:'vb-swatch',style:'background:var(--heloc)'}), 'HELOC bills ('+state.data.helocAccount+')']),
+    ]),
+  ]);
+  body.appendChild(beam);
+
+  const kv = el('div',{});
+  kv.appendChild(kvRow('Opening HELOC balance', money(c.openingHeloc)));
+  kv.appendChild(kvRow('Opening checking balance', money(c.openingChecking)));
+  kv.appendChild(kvRow('Threshold amount (keep $'+state.data.checkingThreshold+' in bank)', money(c.thresholdAmt)));
+  kv.appendChild(kvRow('Bank bills this week', money(c.bankBills)));
+  kv.appendChild(kvRow('Other income', money(c.otherIncome)));
+  kv.appendChild(kvRow('Available funds', money(c.availableFunds), true));
+  kv.appendChild(kvRow('HELOC bills this week', money(c.helocBills)));
+  body.appendChild(kv);
+
+  const bannerClass = c.action==='toBank' ? 'to-bank' : 'to-heloc';
+  const bannerText = c.action==='toBank' ? 'Move cash from HELOC → Bank' : 'Move cash from Bank → HELOC';
+  const checkId = 'vb-complete-'+i;
+  const banner = el('div',{class:'vb-action-banner '+bannerClass},[
+    el('div',{},[
+      el('div',{class:'vb-action-text'},[bannerText]),
+      el('div',{class:'vb-action-amt'},[money(Math.abs(c.moveAmount))]),
+    ]),
+    el('label',{class:'vb-check', for:checkId},[
+      (()=>{ const cb = el('input',{type:'checkbox', id:checkId}); cb.checked = !!wk.completed; cb.addEventListener('change', async ()=>{ wk.completed = cb.checked; await saveMonth(); }); return cb; })(),
+      'Completed'
+    ]),
+  ]);
+  body.appendChild(banner);
+  body.appendChild(kvRow('HELOC balance after Week '+(i+1), money(c.helocAfter), true));
+
+  // editable inputs
+  const editRow = el('div',{class:'vb-inline-edit'},[
+    fieldNum('Opening HELOC balance', wk.openingHeloc, async v=>{ wk.openingHeloc=v; await saveMonth(); render(); }),
+    fieldNum('Opening checking balance', wk.openingChecking, async v=>{ wk.openingChecking=v; await saveMonth(); render(); }),
+    fieldNum('Other income', wk.otherIncome, async v=>{ wk.otherIncome=v; await saveMonth(); render(); }),
+  ]);
+  if(i>0){
+    const carryBtn = el('button',{class:'vb-btn ghost small', onclick: async ()=>{
+      const prev = computeWeeks(state.data)[i-1];
+      wk.openingHeloc = prev.helocAfter;
+      await saveMonth(); render();
+    }},['↳ Carry HELOC balance from Week '+i]);
+    editRow.appendChild(carryBtn);
+  }
+  body.appendChild(editRow);
+
+  card.appendChild(body);
+  return card;
+}
+function kvRow(label, val, isTotal){
+  return el('div',{class:'vb-kv'+(isTotal?' total':'')},[el('div',{class:'vb-kv-label'},[label]), el('div',{},[val])]);
+}
+
+// ----- Summary panel -----
+function renderSummary(){
+  const wrap = el('div',{});
+  const calc = computeWeeks(state.data);
+  const card = el('div',{class:'vb-card'});
+  card.appendChild(el('h3',{},[ymLabel(state.currentYm)+' at a glance']));
+
+  const totalBank = round2(calc.reduce((s,c)=>s+c.bankBills,0));
+  const totalHeloc = round2(calc.reduce((s,c)=>s+c.helocBills,0));
+  const totalIncome = round2(calc.reduce((s,c)=>s+c.otherIncome,0));
+  const netHelocChange = round2(calc[3].helocAfter - calc[0].openingHeloc);
+
+  const kv = el('div',{});
+  kv.appendChild(kvRow('Total bank bills ('+state.data.bankAccount+')', money(totalBank)));
+  kv.appendChild(kvRow('Total HELOC bills ('+state.data.helocAccount+')', money(totalHeloc)));
+  kv.appendChild(kvRow('Total other income entered', money(totalIncome)));
+  kv.appendChild(kvRow('HELOC balance — start of month', money(calc[0].openingHeloc)));
+  kv.appendChild(kvRow('HELOC balance — end of month', money(calc[3].helocAfter), true));
+  kv.appendChild(kvRow('Net HELOC change', (netHelocChange<=0?'−':'+')+Math.abs(netHelocChange).toFixed(2)));
+  card.appendChild(kv);
+  wrap.appendChild(card);
+
+  const chartCard = el('div',{class:'vb-card'});
+  chartCard.appendChild(el('h3',{},['HELOC balance after each week']));
+  const maxVal = Math.max(...calc.map(c=>Math.abs(c.helocAfter)), 1);
+  const chart = el('div',{class:'vb-summary-chart'});
+  calc.forEach((c,i)=>{
+    const pct = Math.max(4, Math.round(Math.abs(c.helocAfter)/maxVal*100));
+    chart.appendChild(el('div',{class:'vb-sum-col'},[
+      el('div',{class:'vb-sum-val'},[money(c.helocAfter)]),
+      el('div',{class:'vb-sum-bar', style:'height:'+pct+'%;'+(c.helocAfter<0?'background:var(--bank);':'')}),
+      el('div',{class:'vb-sum-label'},['Wk '+(i+1)]),
+    ]));
+  });
+  chartCard.appendChild(chart);
+  wrap.appendChild(chartCard);
+
+  const otherBills = state.data.bills.filter(b=>b.account!==state.data.bankAccount && b.account!==state.data.helocAccount);
+  if(otherBills.length){
+    const oc = el('div',{class:'vb-card'});
+    oc.appendChild(el('h3',{},['Other-account bills ', el('span',{class:'vb-note'},['— not counted in either weekly bucket, same as the original workbook'])]));
+    const table = el('table',{class:'vb-table'});
+    table.appendChild(el('thead',{},[el('tr',{},[el('th',{},['Due']),el('th',{},['Payee']),el('th',{},['Account']),el('th',{},['Amount'])])]));
+    const tbody = el('tbody',{});
+    otherBills.sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>{
+      tbody.appendChild(el('tr',{},[
+        el('td',{},[dispDate(b.date)]), el('td',{},[b.payee]), el('td',{},[b.account]),
+        el('td',{class:'vb-amt '+(b.amount<0?'neg':'pos')},[money(b.amount)]),
+      ]));
+    });
+    table.appendChild(tbody);
+    oc.appendChild(table);
+    wrap.appendChild(oc);
+  }
+
+  return wrap;
+}
+
+// ---------- Excel export (mirrors the original workbook layout) ----------
+function onExport(){
+  if(typeof XLSX === 'undefined'){
+    alert('Excel export library did not load — check your connection and try again.');
+    return;
+  }
+  const data = state.data;
+  const calc = computeWeeks(data);
+  const wb = XLSX.utils.book_new();
+
+  [0,1,2,3].forEach(i=>{
+    const ws = XLSX.utils.aoa_to_sheet(buildWeekAOA(i, calc[i], data.weeks[i], data));
+    ws['!cols'] = [{wch:2},{wch:32},{wch:14},{wch:14},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Week '+(i+1));
+  });
+
+  const billsWs = XLSX.utils.aoa_to_sheet(buildBillsAOA(data));
+  billsWs['!cols'] = [{wch:10},{wch:12},{wch:26},{wch:12},{wch:22},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, billsWs, 'Bills');
+
+  const summaryWs = XLSX.utils.aoa_to_sheet(buildSummaryAOA(data, calc));
+  summaryWs['!cols'] = [{wch:36},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+
+  XLSX.writeFile(wb, data.ym+'-velocity-banking-export.xlsx');
+}
+
+function blankRows(n, cols){
+  return Array.from({length:n}, ()=> Array.from({length:cols}, ()=>null));
+}
+
+function buildWeekAOA(i, c, wk, data){
+  const R = blankRows(40, 5); // columns A-E, rows 1-40 (1-indexed in Excel, 0-indexed here)
+  const actionLabel = c.action==='toBank' ? 'Move cash from HELOC to Bank' : 'Move cash from Bank to HELOC';
+  R[1][1] = 'Week '+(i+1);
+  R[1][3] = fmtDisp(c.start)+' - '+fmtDisp(c.end);
+  R[5][1] = "Week's Schedule";
+  R[6][1] = 'Actions'; R[6][2] = 'Date'; R[6][3] = 'Amount'; R[6][4] = 'Completed';
+  R[7][1] = actionLabel; R[7][2] = fmtDisp(c.start); R[7][3] = c.moveAmount; R[7][4] = wk.completed ? 'Yes' : 'No';
+  R[13][1] = "Week's Details";
+  R[14][1] = 'HELOC Balance'; R[14][3] = c.openingHeloc;
+  R[17][1] = 'Bank Checking Balance'; R[17][3] = c.openingChecking;
+  R[20][1] = 'Bank Threshold'; R[20][3] = c.thresholdAmt; R[20][4] = 'Amount needed to keep $'+data.checkingThreshold+' in the bank.';
+  R[23][1] = 'Bank Bills ('+data.bankAccount+')'; R[23][3] = c.bankBills;
+  R[26][1] = 'Other Income'; R[26][3] = c.otherIncome;
+  R[29][1] = 'Available Funds'; R[29][3] = c.availableFunds;
+  R[32][1] = 'HELOC Bills ('+data.helocAccount+')'; R[32][3] = c.helocBills;
+  R[35][1] = actionLabel; R[35][3] = c.moveAmount;
+  R[38][1] = 'HELOC Balance After Week '+(i+1); R[38][3] = c.helocAfter;
+  return R;
+}
+
+function buildBillsAOA(data){
+  const rows = [['Status','Due','Pay To / Receive From','Payments','Account to Use','Method']];
+  [...data.bills].sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>{
+    rows.push([b.status||'Manual', dispDate(b.date), b.payee, b.amount, b.account, 'Payment']);
+  });
+  return rows;
+}
+
+function buildSummaryAOA(data, calc){
+  const totalBank = round2(calc.reduce((s,c)=>s+c.bankBills,0));
+  const totalHeloc = round2(calc.reduce((s,c)=>s+c.helocBills,0));
+  const totalIncome = round2(calc.reduce((s,c)=>s+c.otherIncome,0));
+  const rows = [
+    [ymLabel(data.ym)+' Summary', ''],
+    ['Generated', new Date().toISOString().slice(0,10)],
+    ['', ''],
+    ['Bank account', data.bankAccount],
+    ['HELOC account', data.helocAccount],
+    ['Checking threshold', data.checkingThreshold],
+    ['', ''],
+    ['Total bank bills', totalBank],
+    ['Total HELOC bills', totalHeloc],
+    ['Total other income entered', totalIncome],
+    ['', ''],
+    ['HELOC balance - start of month', calc[0].openingHeloc],
+    ['HELOC balance - end of month', calc[3].helocAfter],
+    ['Net HELOC change', round2(calc[3].helocAfter - calc[0].openingHeloc)],
+    ['', ''],
+    ['Note', 'This export is a snapshot of calculated values, not live formulas.'],
+  ];
+  return rows;
+}
+
+loadAll();
+})();
+</script>
