@@ -253,7 +253,44 @@ if(configuredApiUrl){
 }
 // else: leave Claude's native artifact storage in place
 
-const STORAGE_SETTINGS = 'global-settings';
+async function callBackendAction(action, payload){
+  if(!state.apiUrl) throw new Error('Connect Google Sheets sync first (Setup tab) — Calendar uses the same connection.');
+  const res = await fetch(state.apiUrl, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(Object.assign({action}, payload))
+  });
+  const text = await res.text();
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  try{ return JSON.parse(text); }
+  catch(e){ throw new Error('Non-JSON response from script'); }
+}
+
+async function onAddToCalendar(weekIndex, c){
+  const wk = state.data.weeks[weekIndex];
+  const dateStr = wk.scheduledDate || fmtDate(c.start);
+  const actionLabel = c.action==='toBank' ? 'Move cash: HELOC → Bank' : 'Move cash: Bank → HELOC';
+  const amt = Math.abs(c.moveAmount).toFixed(2);
+  const title = actionLabel + ' ($' + amt + ')';
+  const description = 'Velocity Banking — '+ymLabel(state.data.ym)+', Week '+(weekIndex+1)+'. '+actionLabel+'. Amount: $'+amt;
+  const btn = document.getElementById('vb-cal-btn-'+weekIndex);
+  const statusEl = document.getElementById('vb-cal-status-'+weekIndex);
+  if(btn) btn.disabled = true;
+  if(statusEl) statusEl.textContent = 'Saving to calendar…';
+  try{
+    const r = await callBackendAction('createEvent', {date: dateStr, title, description, eventId: wk.calendarEventId || null});
+    if(!r || !r.ok) throw new Error((r && r.error) || 'unknown error');
+    wk.calendarEventId = r.eventId;
+    wk.scheduledDate = dateStr;
+    await saveMonth();
+    render();
+  }catch(e){
+    if(statusEl) statusEl.textContent = 'Could not add to calendar: ' + e.message;
+    if(btn) btn.disabled = false;
+  }
+}
+
+
 const STORAGE_INDEX = 'months-index';
 
 let state = {
@@ -360,7 +397,7 @@ function freshMonth(ym){
     helocAccount: state.settings.helocAccount,
     checkingThreshold: state.settings.checkingThreshold,
     bills: [],
-    weeks: [0,1,2,3].map(()=>({openingHeloc:0, openingChecking:0, otherIncome:0, completed:false})),
+    weeks: [0,1,2,3].map(()=>({openingHeloc:0, openingChecking:0, otherIncome:0, completed:false, scheduledDate:null, calendarEventId:null})),
   };
 }
 
@@ -874,6 +911,19 @@ function renderWeekCard(i, c){
     editRow.appendChild(carryBtn);
   }
   body.appendChild(editRow);
+
+  // schedule + Google Calendar
+  const schedWrap = el('div',{class:'vb-inline-edit'});
+  const dateInput = el('input',{type:'date', value: wk.scheduledDate || fmtDate(c.start)});
+  dateInput.addEventListener('change', async ()=>{ wk.scheduledDate = dateInput.value; await saveMonth(); });
+  const calBtn = el('button',{id:'vb-cal-btn-'+i, class:'vb-btn small', onclick: ()=> onAddToCalendar(i, c)},
+    [wk.calendarEventId ? 'Update Google Calendar event' : 'Add to Google Calendar']);
+  const statusText = wk.calendarEventId ? ('On calendar for '+dispDate(wk.scheduledDate || fmtDate(c.start))) : 'Not scheduled yet';
+  const statusEl = el('span',{id:'vb-cal-status-'+i, class:'vb-help', style:'align-self:center;'},[statusText]);
+  schedWrap.appendChild(el('div',{class:'vb-field'},[el('label',{},['Move it on']), dateInput]));
+  schedWrap.appendChild(calBtn);
+  schedWrap.appendChild(statusEl);
+  body.appendChild(schedWrap);
 
   card.appendChild(body);
   return card;
