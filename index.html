@@ -521,10 +521,12 @@ function el(tag, attrs, children){
   attrs = attrs || {};
   const e = document.createElement(tag);
   Object.keys(attrs).forEach(k=>{
-    if(k === 'class') e.className = attrs[k];
-    else if(k === 'html') e.innerHTML = attrs[k];
-    else if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
-    else e.setAttribute(k, attrs[k]);
+    const v = attrs[k];
+    if(v === null || v === undefined) return; // skip — avoids setAttribute(x, "null")
+    if(k === 'class') e.className = v;
+    else if(k === 'html') e.innerHTML = v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
   });
   (children||[]).forEach(c=>{ if(c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
   return e;
@@ -568,6 +570,7 @@ function renderHeader(){
   const sel = el('select',{class:'vb-select', onchange:async (e)=>{ state.currentYm = e.target.value; await loadMonth(state.currentYm); render(); }},
     state.months.map(ym=> el('option',{value:ym, selected: ym===state.currentYm ? 'selected': null}, [ymLabel(ym)]))
   );
+  sel.value = state.currentYm; // belt-and-suspenders: force correct selection regardless of attribute order
   const newBtn = el('button',{class:'vb-btn ghost small', onclick: onNewMonth},['+ New month']);
   const exportBtn = el('button',{class:'vb-btn small', onclick: onExport},['Export to Excel']);
   const right = el('div',{class:'vb-month-picker'},[sel, newBtn, exportBtn]);
